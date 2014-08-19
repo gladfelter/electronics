@@ -17,7 +17,8 @@ void SerialInit(uint16_t baud_rate, char volatile ** rxBuffer,
   // 16-bit, high baud rate
   BRG16 = 1;
   BRGH = 1;
-  unsigned short coef = (uint8_t)((_XTAL_FREQ / ((float)baud_rate * 4.0) - 1) + 0.5);
+  unsigned short coef = (uint8_t)((_XTAL_FREQ
+      / ((float)baud_rate * 4.0) - 1) + 0.5);
   SPBRG = coef;
 
   //TXSTA
@@ -42,7 +43,6 @@ void SerialInit(uint16_t baud_rate, char volatile ** rxBuffer,
 void SerialPutCh(char ch) {
   while (!PIR1bits.TXIF) {
   }
-
   TXREG = ch;
 }
 
