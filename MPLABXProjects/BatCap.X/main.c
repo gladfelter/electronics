@@ -77,14 +77,21 @@ void main() {
   // Configure Serial port directions, type
   TRISA0 = OUTPUT;
   TRISA1 = INPUT;
-  ANSELA &= ~0b11;
+  ANSELA &= ~0b11; // A0-1 are not analog
+  RXDTSEL = 1; // RX is on RA1
+  TXCKSEL = 1; // TX is on RA0
 
   // Configure backlight control
   TRISC4 = OUTPUT;
-  ANSELC &= ~(1<<4);
+  ANSELC &= ~(1<<4); // C4 is not analog
   RC4 = 1;
 
+  // Use TTL signaling on Digital I/O
+  INLVLA = 0;
+  INLVLC = 0;
+
   waitOnOscillatorStable();
+
   SerialInit(9600, &serialBufferPtr, 64);
   SerialWriteLine("Awake!");
 
