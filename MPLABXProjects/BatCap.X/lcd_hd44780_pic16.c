@@ -95,15 +95,20 @@ me@avinashgupta.com
 void writeLcdNibble(char data) {
   char portTmp = (LCD_DATA_LATCH &
       ~(0x0F << LCD_DATA_POS)) | ((data) << LCD_DATA_POS);
+#ifdef LCD_DEBUG
   printf("writing 0x%x\r\n", portTmp);
+#endif
   LCD_DATA_PORT = portTmp;
   CLEAR_E();
   __delay_us(1);
+#ifdef LCD_DEBUG
   if (LCD_E) {
     printf("ERROR: LCD Enable didn't go low at start of pulse\r\n");
   }
+#endif
   SET_E();
   __delay_us(1);
+#ifdef LCD_DEBUG
   printf("LCD Port Value: 0x%x\r\n", LCD_DATA_PORT);
   printf("LCD Latch Value: 0x%x\r\n", LCD_DATA_LATCH);
   printf("LCD Enable/RS/RW Values: %d/%d/%d\r\n", LCD_E, LCD_RS, LCD_RW);
@@ -112,11 +117,14 @@ void writeLcdNibble(char data) {
   if (!LCD_E) {
     printf("ERROR: LCD Enable didn't go high\r\n");
   }
+#endif
   CLEAR_E();
   __delay_us(100);
+#ifdef LCD_DEBUG
   if (LCD_E) {
     printf("ERROR: LCD Enable didn't go low at end of pulse");
   }
+#endif
 }
 
 void LCDByte(uint8_t c, uint8_t isdata) {
@@ -132,16 +140,6 @@ void LCDByte(uint8_t c, uint8_t isdata) {
     writeLcdNibble((c) >> 4);
     writeLcdNibble((c) & 0x0F);
 }
-
-#define WRITE_LCD_BYTE(data, rs) \
-    if (rs) { \
-      SET_RS(); \
-    } else { \
-      CLEAR_RS(); \
-    } \
-    CLEAR_RW(); \
-    writeLcdNibble((data) >> 4); \
-    writeLcdNibble((data) & 0x0F)
 
 void LCDInit(uint8_t style) {
   /*****************************************************************
@@ -171,11 +169,15 @@ void LCDInit(uint8_t style) {
   CLEAR_RS();
   CLEAR_RW();
   CLEAR_E();
+#ifdef LCD_DEBUG
   printf("TRISA=0x%x\r\n", TRISA);
   printf("TRISC=0x%x\r\n", TRISC);
-  
+#endif
+
   //Set 4-bit mode
+#ifdef LCD_DEBUG
   printf("initializing lcd\r\n");
+#endif
   writeLcdNibble(0b0011);
   __delay_us(4500);
   writeLcdNibble(0b0011);
@@ -184,81 +186,18 @@ void LCDInit(uint8_t style) {
   __delay_us(150);
   writeLcdNibble(0b0010);
 
-  WRITE_LCD_BYTE(0b00101000, 0);
-  WRITE_LCD_BYTE(0b00001100, 0);
-  WRITE_LCD_BYTE(0b00000001, 0);
+  LCDByte(0b00101000, 0);
+  LCDByte(0b00001100, 0);
+  LCDByte(0b00000001, 0);
   __delay_us(2000);
-  WRITE_LCD_BYTE(0b00000110, 0);
+  LCDByte(0b00000110, 0);
 
-//  printf("finished initialization, about to write character\r\n");
-  WRITE_LCD_BYTE('a', 1);
-
-  int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
-
-  WRITE_LCD_BYTE(0x80 | (row_offsets[1]), 0);
-  char c = 'a';
-  for (; c < 'l'; c++) {
-    WRITE_LCD_BYTE(c, 1);
-  }
-
-  printf("finished writing character\r\n");
-
-  //  LCDCmd(0b00001100 | style); //Display On
-
-  //  /* Custom Char */
-  //  LCDCmd(0b01000000);
-  //
-  //  uint8_t __i;
-  //  for (__i = 0; __i<sizeof (__cgram); __i++)
-  //    LCDData(__cgram[__i]);
-
-
+  LCDCmd(0b00001100 | style); //Display On
 }
 
 void LCDWriteString(const char *msg) {
-  /*****************************************************************
-
-  This function Writes a given string to lcd at the current cursor
-  location.
-
-  Arguments:
-  msg: a null terminated C style string to print
-
-  Their are 8 custom char in the LCD they can be defined using
-  "LCD Custom Character Builder" PC Software.
-
-  You can print custom character using the % symbol. For example
-  to print custom char number 0 (which is a degree symbol), you
-  need to write
-
-  LCDWriteString("Temp is 30%0C");
-                                  ^^
-                                   |----> %0 will be replaced by
-                                          custom char 0.
-
-  So it will be printed like.
-
-    Temp is 30�C
-
-  In the same way you can insert any symbols numbered 0-7
-
-
-   *****************************************************************/
   while (*msg != '\0') {
-    //Custom Char Support
-    if (*msg == '%') {
-      msg++;
-      int8_t cc = *msg - '0';
-
-      if (cc >= 0 && cc <= 7) {
-        LCDData(cc);
-      } else {
-        LCDData('%');
-        LCDData(*msg);
-      }
-    } else {
-      LCDData(*msg);
-    }
+    LCDData(*msg);
     msg++;
   }
 }

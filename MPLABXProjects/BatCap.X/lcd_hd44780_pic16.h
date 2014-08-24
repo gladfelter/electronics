@@ -15,6 +15,7 @@
 extern "C" {
 #endif
 
+//#define LCD_DEBUG
 
 /************************************************
 	LCD CONNECTIONS
@@ -86,7 +87,6 @@ void LCDByte(uint8_t,uint8_t);
 #define LCDData(d) (LCDByte(d,1))
 
 void LCDBusyLoop();
-
 /***************************************************
 			F U N C T I O N S     E N D
 ****************************************************/
