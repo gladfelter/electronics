@@ -112,6 +112,7 @@ void main() {
   LCDInit(LS_NONE);
   //LCDClear();
   LCDWriteString("Awake!");
+  LCDWriteStringXY(0, 1, "Yeah!");
   while (1) {
 //    unsigned char data;
 //    for (data = 0; data < 0x010; data++) {

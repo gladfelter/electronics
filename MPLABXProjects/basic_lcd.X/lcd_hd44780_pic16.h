@@ -15,6 +15,10 @@
 extern "C" {
 #endif
 
+#define PORT(x) PORT##x
+#define TRIS(x) TRIS##x
+#define TRISBIT(port, pos) TRIS##port##bits.TRIS##port##pos
+#define PORTBIT(port, pos) R##port##pos
 
 /************************************************
 	LCD CONNECTIONS

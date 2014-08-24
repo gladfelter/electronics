@@ -4,9 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>custom_char.h</itemPath>
       <itemPath>lcd_hd44780_pic16.h</itemPath>
-      <itemPath>myutils.h</itemPath>
       <itemPath>serial_pic16.h</itemPath>
       <itemPath>frequency.h</itemPath>
     </logicalFolder>
