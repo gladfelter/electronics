@@ -194,13 +194,26 @@ void LCDBusyLoop() {
 
 void writeLcdNibble (char data) {
     char portTmp = (LCD_DATA_PORT &
-    ~(0x0F << LCD_DATA_POS)) | ((data) << LCD_DATA_POS); 
+    ~(0x0F << LCD_DATA_POS)) | ((data) << LCD_DATA_POS);
+    printf("writing 0x%x\r\n", portTmp);
     LCD_DATA_PORT = portTmp; 
     CLEAR_E(); 
-    __delay_us(30); 
+    __delay_us(30);
+        if (LCD_E) {
+      printf("ERROR: LCD Enable didn't go low at start of pulse");
+    }
     SET_E(); 
-    __delay_us(30); 
+    __delay_us(30);
+    printf("LCD Port Value: 0x%x\r\n", LCD_DATA_PORT);
+    printf("LCD Enable/RS/RW Values: %d/%d/%d\r\n", LCD_E, LCD_RS, LCD_RW);
+    if (!LCD_E) {
+      printf("ERROR: LCD Enable didn't go high");
+    }
     CLEAR_E();
+    __delay_us(30);
+    if (LCD_E) {
+      printf("ERROR: LCD Enable didn't go low at end of pulse");
+    }
 }
 
 #define WRITE_LCD_BYTE(data, delay) \
@@ -220,6 +233,8 @@ void LCDInit(uint8_t style) {
         LS_NONE : No visible cursor
 
    *****************************************************************/
+  
+  __delay_ms(100);
 
   //Set IO Ports
   LCD_DATA_TRIS &= (~(0x0F << LCD_DATA_POS)); //Output
@@ -265,12 +280,9 @@ void LCDInit(uint8_t style) {
   printf("finished initialization, about to write character\r\n");
   SET_RS();
   __delay_us(30);
-  int x;
-  for (x = 0; x < 80; x++) {
-    WRITE_LCD_BYTE('a', 50);
-  }
+  WRITE_LCD_BYTE('a', 50);
   __delay_us(30);
-  //CLEAR_RS();
+  CLEAR_RS();
   
 //  LCDData('a');
   printf("finished writing character\r\n");

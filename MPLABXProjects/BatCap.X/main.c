@@ -85,11 +85,11 @@ void main() {
   TXCKSEL = 1; // TX is on RA0
 
   ANSELC &= ~0b011111;
-  ANSELA &= ~0b110011; // A0-1 are not analog
+  ANSELA &= ~0b110011; 
   
   // Use TTL signaling on Digital I/O
-  //INLVLA = 0;
-  //INLVLC = 0;
+  INLVLA = 0;
+  INLVLC = 0;
 
   waitOnOscillatorStable();
   __delay_ms(40);
@@ -111,9 +111,18 @@ void main() {
   SerialWriteLine("Awake!");
 
   LCDInit(LS_NONE);
-  //LCDClear();
-  //LCDWriteString("Awake!");
+  LCDClear();
+  LCDWriteString("Awake!");
   while (1) {
+//    unsigned char data;
+//    for (data = 0; data < 0x010; data++) {
+//      __delay_ms(10000);
+//      __delay_ms(10000);
+//      PORTC = data;
+//      char binbuff[20];
+//      itoa(binbuff, data, 2);
+//      printf("Data = 0b%s\r\n", binbuff);
+//    }
   }
 }
 
