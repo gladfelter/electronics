@@ -76,7 +76,6 @@ void waitOnOscillatorStable() {
  */
 void main() {
   OSCCONbits.IRCF = IRCF_OSC_16MHZ;
-  
   // Configure Serial port directions, type
   TRISA0 = OUTPUT;
   TRISA1 = INPUT;
@@ -111,8 +110,8 @@ void main() {
   SerialWriteLine("Awake!");
 
   LCDInit(LS_NONE);
-  LCDClear();
-  LCDWriteString("Awake!");
+  //LCDClear();
+  //LCDWriteString("Awake!");
   while (1) {
 //    unsigned char data;
 //    for (data = 0; data < 0x010; data++) {

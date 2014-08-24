@@ -50,25 +50,38 @@ me@avinashgupta.com
 #include "custom_char.h"
 
 #define LCD_DATA_PORT 	PORT(LCD_DATA)
+#define LCD_DATA_LATCH 	LATCH(LCD_DATA)
 #define LCD_DATA_TRIS 	TRIS(LCD_DATA)
 
 #define LCD_E           PORTBIT(LCD_E_PORT,LCD_E_POS)
 #define LCD_E_TRIS      TRISBIT(LCD_E_PORT,LCD_E_POS)
+#define LCD_E_LATCH     LATCHBIT(LCD_E_PORT,LCD_E_POS)
 
 #define LCD_RS          PORTBIT(LCD_RS_PORT,LCD_RS_POS)
 #define LCD_RS_TRIS     TRISBIT(LCD_RS_PORT,LCD_RS_POS)
+#define LCD_RS_LATCH    LATCHBIT(LCD_RS_PORT,LCD_RS_POS)
+
 
 #define LCD_RW          PORTBIT(LCD_RW_PORT,LCD_RW_POS)
 #define LCD_RW_TRIS     TRISBIT(LCD_RW_PORT,LCD_RW_POS)
+#define LCD_RW_LATCH    LATCHBIT(LCD_RW_PORT,LCD_RW_POS)
 
 
-#define SET_E() (LCD_E=1)
-#define SET_RS() (LCD_RS=1)
-#define SET_RW() (LCD_RW=1)
+//#define SET_E() (LCD_E=1)
+//#define SET_RS() (LCD_RS=1)
+//#define SET_RW() (LCD_RW=1)
 
-#define CLEAR_E() (LCD_E=0)
-#define CLEAR_RS() (LCD_RS=0)
-#define CLEAR_RW() (LCD_RW=0)
+#define SET_E()  (PORTC = LATC | 0b0010000)
+#define SET_RS() (PORTA = LATA | 0b0010000)
+#define SET_RW() (PORTA = LATA | 0b0100000)
+
+//#define CLEAR_E() (LCD_E=0)
+//#define CLEAR_RS() (LCD_RS=0)
+//#define CLEAR_RW() (LCD_RW=0)
+
+#define CLEAR_E()  (PORTC = LATC & ~0b0010000)
+#define CLEAR_RS() (PORTA = LATA & ~0b0010000)
+#define CLEAR_RW() (PORTA = LATA & ~0b0100000)
 
 #ifdef LCD_TYPE_162
 #define LCD_TYPE_204
@@ -78,147 +91,57 @@ me@avinashgupta.com
 #define LCD_TYPE_204
 #endif
 
+
+void writeLcdNibble(char data) {
+  char portTmp = (LCD_DATA_LATCH &
+      ~(0x0F << LCD_DATA_POS)) | ((data) << LCD_DATA_POS);
+  printf("writing 0x%x\r\n", portTmp);
+  LCD_DATA_PORT = portTmp;
+  CLEAR_E();
+  __delay_us(1);
+  if (LCD_E) {
+    printf("ERROR: LCD Enable didn't go low at start of pulse\r\n");
+  }
+  SET_E();
+  __delay_us(1);
+  printf("LCD Port Value: 0x%x\r\n", LCD_DATA_PORT);
+  printf("LCD Latch Value: 0x%x\r\n", LCD_DATA_LATCH);
+  printf("LCD Enable/RS/RW Values: %d/%d/%d\r\n", LCD_E, LCD_RS, LCD_RW);
+  printf("LCD Enable/RS/RW Latches: %d/%d/%d\r\n", LCD_E_LATCH,
+      LCD_RS_LATCH, LCD_RW_LATCH);
+  if (!LCD_E) {
+    printf("ERROR: LCD Enable didn't go high\r\n");
+  }
+  CLEAR_E();
+  __delay_us(100);
+  if (LCD_E) {
+    printf("ERROR: LCD Enable didn't go low at end of pulse");
+  }
+}
+
 void LCDByte(uint8_t c, uint8_t isdata) {
   //Sends a byte to the LCD in 4bit mode
   //cmd=0 for data
   //cmd=1 for command
-
-
-  //NOTE: THIS FUNCTION RETURS ONLY WHEN LCD HAS PROCESSED THE COMMAND
-
-  uint8_t hn, ln; //Nibbles
-  uint8_t temp;
-
-  hn = c >> 4;
-  ln = (c & 0x0F);
-
-  if (isdata == 0)
-    CLEAR_RS();
-  else
-    SET_RS();
-
-  __delay_us(1); //tAS
-
-  SET_E();
-
-  //Send high nibble
-
-  temp = (LCD_DATA_PORT & (~(0X0F << LCD_DATA_POS))) | ((hn << LCD_DATA_POS));
-  LCD_DATA_PORT = temp;
-
-  __delay_us(1); //tEH
-
-  //Now data lines are stable pull E low for transmission
-
-  CLEAR_E();
-
-  __delay_us(1);
-
-  //Send the lower nibble
-  SET_E();
-
-  temp = (LCD_DATA_PORT & (~(0X0F << LCD_DATA_POS))) | ((ln << LCD_DATA_POS));
-
-  LCD_DATA_PORT = temp;
-
-  __delay_us(1); //tEH
-
-  //SEND
-
-  CLEAR_E();
-
-  __delay_us(1); //tEL
-
-  LCDBusyLoop();
+    if (isdata) {
+      SET_RS();
+    } else {
+      CLEAR_RS();
+    }
+    CLEAR_RW();
+    writeLcdNibble((c) >> 4);
+    writeLcdNibble((c) & 0x0F);
 }
 
-void LCDBusyLoop() {
-  //This function waits till lcd is BUSY
-
-  uint8_t busy, status = 0x00, temp;
-
-  //Change Port to input type because we are reading data
-  LCD_DATA_TRIS |= (0x0f << LCD_DATA_POS);
-
-  //change LCD mode
-  SET_RW(); //Read mode
-  CLEAR_RS(); //Read status
-
-  //Let the RW/RS lines stabilize
-
-  __delay_us(1); //tAS
-
-
-  do {
-
-    SET_E();
-
-    //Wait tDA for data to become available
-    __delay_us(1);
-
-    status = (LCD_DATA_PORT >> LCD_DATA_POS);
-    status = status << 4;
-
-    __delay_us(1);
-
-    //Pull E low
-    CLEAR_E();
-    __delay_us(1); //tEL
-
-    SET_E();
-    __delay_us(1);
-
-    temp = (LCD_DATA_PORT >> LCD_DATA_POS);
-    temp &= 0x0F;
-
-    status = status | temp;
-
-    busy = status & 0b10000000;
-
-    __delay_us(1);
-
-    CLEAR_E();
-    __delay_us(1); //tEL
-  } while (busy);
-
-  CLEAR_RW(); //write mode
-
-  //Change Port to output
-  LCD_DATA_TRIS &= (~(0x0F << LCD_DATA_POS));
-
-}
-
-#define WRITE_LCD_NIBBLE(data, delay) \
-  writeLcdNibble(data); \
-  __delay_us(delay)
-
-void writeLcdNibble (char data) {
-    char portTmp = (LCD_DATA_PORT &
-    ~(0x0F << LCD_DATA_POS)) | ((data) << LCD_DATA_POS);
-    printf("writing 0x%x\r\n", portTmp);
-    LCD_DATA_PORT = portTmp; 
-    CLEAR_E(); 
-    __delay_us(30);
-        if (LCD_E) {
-      printf("ERROR: LCD Enable didn't go low at start of pulse");
-    }
-    SET_E(); 
-    __delay_us(30);
-    printf("LCD Port Value: 0x%x\r\n", LCD_DATA_PORT);
-    printf("LCD Enable/RS/RW Values: %d/%d/%d\r\n", LCD_E, LCD_RS, LCD_RW);
-    if (!LCD_E) {
-      printf("ERROR: LCD Enable didn't go high");
-    }
-    CLEAR_E();
-    __delay_us(30);
-    if (LCD_E) {
-      printf("ERROR: LCD Enable didn't go low at end of pulse");
-    }
-}
-
-#define WRITE_LCD_BYTE(data, delay) \
-    WRITE_LCD_NIBBLE((data) >> 4, 100); \
-    WRITE_LCD_NIBBLE((data) & 0x0F, delay)
+#define WRITE_LCD_BYTE(data, rs) \
+    if (rs) { \
+      SET_RS(); \
+    } else { \
+      CLEAR_RS(); \
+    } \
+    CLEAR_RW(); \
+    writeLcdNibble((data) >> 4); \
+    writeLcdNibble((data) & 0x0F)
 
 void LCDInit(uint8_t style) {
   /*****************************************************************
@@ -233,7 +156,8 @@ void LCDInit(uint8_t style) {
         LS_NONE : No visible cursor
 
    *****************************************************************/
-  
+
+  //After power on Wait for LCD to Initialize
   __delay_ms(100);
 
   //Set IO Ports
@@ -244,63 +168,49 @@ void LCDInit(uint8_t style) {
   LCD_RW_TRIS = 0; //Output
 
   LCD_DATA_PORT &= (~(0x0F << LCD_DATA_POS)); //Clear data port
-
-  CLEAR_E();
-  CLEAR_RW();
   CLEAR_RS();
-
-  //After power on Wait for LCD to Initialize
-  __delay_ms(100);
-
+  CLEAR_RW();
+  CLEAR_E();
+  printf("TRISA=0x%x\r\n", TRISA);
+  printf("TRISC=0x%x\r\n", TRISC);
+  
   //Set 4-bit mode
   printf("initializing lcd\r\n");
-  WRITE_LCD_NIBBLE(0b0011, 4500);
-  WRITE_LCD_NIBBLE(0b0011, 4500);
-  WRITE_LCD_NIBBLE(0b0011, 4500);
-  WRITE_LCD_NIBBLE(0b0010, 200);
+  writeLcdNibble(0b0011);
+  __delay_us(4500);
+  writeLcdNibble(0b0011);
+  __delay_us(4500);
+  writeLcdNibble(0b0011);
+  __delay_us(150);
+  writeLcdNibble(0b0010);
 
-//  WRITE_LCD_BYTE(0b00101000, 50);
-//  WRITE_LCD_BYTE(0b00001000, 50);
-//  WRITE_LCD_BYTE(0b00000001, 1800);
-//  WRITE_LCD_BYTE(0b00000110, 50);
+  WRITE_LCD_BYTE(0b00101000, 0);
+  WRITE_LCD_BYTE(0b00001100, 0);
+  WRITE_LCD_BYTE(0b00000001, 0);
+  __delay_us(2000);
+  WRITE_LCD_BYTE(0b00000110, 0);
 
-  WRITE_LCD_BYTE(0b00101000, 100);
-  WRITE_LCD_BYTE(0b00001100, 100);
-  WRITE_LCD_BYTE(0b00000001, 2000);
-  WRITE_LCD_BYTE(0b00000110, 100);
+//  printf("finished initialization, about to write character\r\n");
+  WRITE_LCD_BYTE('a', 1);
 
-//  LCDCmd(0b00101000);
-//  LCDCmd(0b00001000);
-//  LCDCmd(0b00000001);
-//  LCDCmd(0b00000110);
-//  LCDCmd(0b00001100);
-//  LCDClear();
-//  LCDHome();
+  int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
 
-  printf("finished initialization, about to write character\r\n");
-  SET_RS();
-  __delay_us(30);
-  WRITE_LCD_BYTE('a', 50);
-  __delay_us(30);
-  CLEAR_RS();
-  
-//  LCDData('a');
+  WRITE_LCD_BYTE(0x80 | (row_offsets[1]), 0);
+  char c = 'a';
+  for (; c < 'l'; c++) {
+    WRITE_LCD_BYTE(c, 1);
+  }
+
   printf("finished writing character\r\n");
 
-  //  LCDCmd(0b00101000); // 2-line, 5x8
-//  LCDCmd(0b00001000); // Display Off, Cursor Off, Blink Off
-//  LCDCmd(0b00000001); // Clear Screen & Returns the Cursor Home
-//  // Inc cursor to the right when writing and don’t shift screen
-//  LCDCmd(0b00000110);
-//
-//  LCDCmd(0b00001100 | style); //Display On
+  //  LCDCmd(0b00001100 | style); //Display On
 
-//  /* Custom Char */
-//  LCDCmd(0b01000000);
-//
-//  uint8_t __i;
-//  for (__i = 0; __i<sizeof (__cgram); __i++)
-//    LCDData(__cgram[__i]);
+  //  /* Custom Char */
+  //  LCDCmd(0b01000000);
+  //
+  //  uint8_t __i;
+  //  for (__i = 0; __i<sizeof (__cgram); __i++)
+  //    LCDData(__cgram[__i]);
 
 
 }

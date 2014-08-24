@@ -15,10 +15,14 @@ extern "C" {
 #define _CONCAT(a,b) a##b
 #define _CONCAT2(port,pos)  TRIS##port##bits.TRIS##port##pos
 #define _CONCAT3(port,pos)  R##port##pos
+#define _CONCAT4(port,pos)  LAT##port##pos
+
 #define PORT(x) _CONCAT(PORT,x)
+#define LATCH(x) _CONCAT(LAT,x)
 #define TRIS(x) _CONCAT(TRIS,x)
 #define TRISBIT(__port,__pos) _CONCAT2(__port,__pos)
 #define PORTBIT(__port,__pos) _CONCAT3(__port,__pos)
+#define LATCHBIT(__port,__pos) _CONCAT3(__port,__pos)
 
 #ifdef	__cplusplus
 }
