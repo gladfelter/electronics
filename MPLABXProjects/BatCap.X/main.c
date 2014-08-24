@@ -36,7 +36,10 @@
 
 #include <stdint.h>        /* For uint8_t definition */
 #include <stdbool.h>       /* For true/false definition */
+#include <stdlib.h>
+#include <stdio.h>
 
+#include "frequency.h"
 #include "serial_pic16.h"
 #include "lcd_hd44780_pic16.h"
 
@@ -57,9 +60,9 @@ void waitOnOscillatorStable() {
  *
  *   LCD:
  *     C0-C3: 4-bit data bus
+ *     C4   : Enable
  *     A4   : Register Select
  *     A5   : Read/Write
- *     C4   : Backlight Control
  *
  *   Serial:
  *     A0   : TX
@@ -77,27 +80,45 @@ void main() {
   // Configure Serial port directions, type
   TRISA0 = OUTPUT;
   TRISA1 = INPUT;
-  ANSELA &= ~0b11; // A0-1 are not analog
+
   RXDTSEL = 1; // RX is on RA1
   TXCKSEL = 1; // TX is on RA0
 
-  // Configure backlight control
-  TRISC4 = OUTPUT;
-  ANSELC &= ~(1<<4); // C4 is not analog
-  RC4 = 1;
-
+  ANSELC &= ~0b011111;
+  ANSELA &= ~0b110011; // A0-1 are not analog
+  
   // Use TTL signaling on Digital I/O
-  INLVLA = 0;
-  INLVLC = 0;
+  //INLVLA = 0;
+  //INLVLC = 0;
 
   waitOnOscillatorStable();
+  __delay_ms(40);
 
   SerialInit(9600, &serialBufferPtr, 64);
+//  short x = 0;
+//  char buffer[10];
+//  for (x = 390; x < 450; x++) {
+//    SPBRG = x;
+//    SerialPuts("Talking at ");
+//    itoa(buffer, x, 10);
+//    SerialPuts(buffer);
+//    SerialPuts("\r\n");
+//  }
+  //SPBRG = 421;
+  int coeff = SPBRG;
+  SPBRG = 421;
+  printf("Testing Serial communication at %d\r\nThe algorithm guessed %d\r\n", SPBRG, coeff);
   SerialWriteLine("Awake!");
 
   LCDInit(LS_NONE);
-  LCDClear();
-  LCDWriteString("Awake!");
+  //LCDClear();
+  //LCDWriteString("Awake!");
   while (1) {
   }
+}
+
+extern void putch(char c);
+
+void putch(char c) {
+  SerialPutCh(c);
 }

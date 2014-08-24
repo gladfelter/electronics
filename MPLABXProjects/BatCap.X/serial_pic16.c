@@ -1,5 +1,7 @@
 #include <xc.h>
 
+#include <math.h>
+
 #include "frequency.h"
 #include "serial_pic16.h"
 
@@ -17,8 +19,8 @@ void SerialInit(uint16_t baud_rate, char volatile ** rxBuffer,
   // 16-bit, high baud rate
   BRG16 = 1;
   BRGH = 1;
-  unsigned short coef = (uint8_t)((_XTAL_FREQ
-      / ((float)baud_rate * 4.0) - 1) + 0.5);
+  unsigned short coef = (unsigned short)floor((_XTAL_FREQ
+      / (4.0 * ((float)baud_rate - 1.0)) + 0.5));
   SPBRG = coef;
 
   //TXSTA

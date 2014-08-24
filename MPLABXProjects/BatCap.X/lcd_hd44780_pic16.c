@@ -42,6 +42,7 @@ me@avinashgupta.com
 
 #include <xc.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "frequency.h"
 #include "lcd_hd44780_pic16.h"
@@ -96,7 +97,7 @@ void LCDByte(uint8_t c, uint8_t isdata) {
   else
     SET_RS();
 
-  __delay_us(0.5); //tAS
+  __delay_us(1); //tAS
 
   SET_E();
 
@@ -145,7 +146,7 @@ void LCDBusyLoop() {
 
   //Let the RW/RS lines stabilize
 
-  __delay_us(0.5); //tAS
+  __delay_us(1); //tAS
 
 
   do {
@@ -153,19 +154,19 @@ void LCDBusyLoop() {
     SET_E();
 
     //Wait tDA for data to become available
-    __delay_us(0.5);
+    __delay_us(1);
 
     status = (LCD_DATA_PORT >> LCD_DATA_POS);
     status = status << 4;
 
-    __delay_us(0.5);
+    __delay_us(1);
 
     //Pull E low
     CLEAR_E();
     __delay_us(1); //tEL
 
     SET_E();
-    __delay_us(0.5);
+    __delay_us(1);
 
     temp = (LCD_DATA_PORT >> LCD_DATA_POS);
     temp &= 0x0F;
@@ -174,7 +175,7 @@ void LCDBusyLoop() {
 
     busy = status & 0b10000000;
 
-    __delay_us(0.5);
+    __delay_us(1);
 
     CLEAR_E();
     __delay_us(1); //tEL
@@ -186,6 +187,25 @@ void LCDBusyLoop() {
   LCD_DATA_TRIS &= (~(0x0F << LCD_DATA_POS));
 
 }
+
+#define WRITE_LCD_NIBBLE(data, delay) \
+  writeLcdNibble(data); \
+  __delay_us(delay)
+
+void writeLcdNibble (char data) {
+    char portTmp = (LCD_DATA_PORT &
+    ~(0x0F << LCD_DATA_POS)) | ((data) << LCD_DATA_POS); 
+    LCD_DATA_PORT = portTmp; 
+    CLEAR_E(); 
+    __delay_us(30); 
+    SET_E(); 
+    __delay_us(30); 
+    CLEAR_E();
+}
+
+#define WRITE_LCD_BYTE(data, delay) \
+    WRITE_LCD_NIBBLE((data) >> 4, 100); \
+    WRITE_LCD_NIBBLE((data) & 0x0F, delay)
 
 void LCDInit(uint8_t style) {
   /*****************************************************************
@@ -201,9 +221,6 @@ void LCDInit(uint8_t style) {
 
    *****************************************************************/
 
-  //After power on Wait for LCD to Initialize
-  __delay_ms(30);
-
   //Set IO Ports
   LCD_DATA_TRIS &= (~(0x0F << LCD_DATA_POS)); //Output
 
@@ -217,30 +234,61 @@ void LCDInit(uint8_t style) {
   CLEAR_RW();
   CLEAR_RS();
 
+  //After power on Wait for LCD to Initialize
+  __delay_ms(100);
+
   //Set 4-bit mode
-  __delay_us(0.5); //tAS
+  printf("initializing lcd\r\n");
+  WRITE_LCD_NIBBLE(0b0011, 4500);
+  WRITE_LCD_NIBBLE(0b0011, 4500);
+  WRITE_LCD_NIBBLE(0b0011, 4500);
+  WRITE_LCD_NIBBLE(0b0010, 200);
 
-  SET_E();
-  LCD_DATA_PORT |= ((0b00000010) << LCD_DATA_POS); //[B] To transfer 0b00100000 i was using LCD_DATA_PORT|=0b00100000
-  __delay_us(1);
-  CLEAR_E();
-  __delay_us(1);
+//  WRITE_LCD_BYTE(0b00101000, 50);
+//  WRITE_LCD_BYTE(0b00001000, 50);
+//  WRITE_LCD_BYTE(0b00000001, 1800);
+//  WRITE_LCD_BYTE(0b00000110, 50);
 
-  //Wait for LCD to execute the Functionset Command
-  LCDBusyLoop(); //[B] Forgot this delay
+  WRITE_LCD_BYTE(0b00101000, 100);
+  WRITE_LCD_BYTE(0b00001100, 100);
+  WRITE_LCD_BYTE(0b00000001, 2000);
+  WRITE_LCD_BYTE(0b00000110, 100);
 
-  //Now the LCD is in 4-bit mode
+//  LCDCmd(0b00101000);
+//  LCDCmd(0b00001000);
+//  LCDCmd(0b00000001);
+//  LCDCmd(0b00000110);
+//  LCDCmd(0b00001100);
+//  LCDClear();
+//  LCDHome();
 
+  printf("finished initialization, about to write character\r\n");
+  SET_RS();
+  __delay_us(30);
+  int x;
+  for (x = 0; x < 80; x++) {
+    WRITE_LCD_BYTE('a', 50);
+  }
+  __delay_us(30);
+  //CLEAR_RS();
+  
+//  LCDData('a');
+  printf("finished writing character\r\n");
 
-  LCDCmd(0b00101000); //function set 4-bit,2 line 5x7 dot format
-  LCDCmd(0b00001100 | style); //Display On
+  //  LCDCmd(0b00101000); // 2-line, 5x8
+//  LCDCmd(0b00001000); // Display Off, Cursor Off, Blink Off
+//  LCDCmd(0b00000001); // Clear Screen & Returns the Cursor Home
+//  // Inc cursor to the right when writing and don’t shift screen
+//  LCDCmd(0b00000110);
+//
+//  LCDCmd(0b00001100 | style); //Display On
 
-  /* Custom Char */
-  LCDCmd(0b01000000);
-
-  uint8_t __i;
-  for (__i = 0; __i<sizeof (__cgram); __i++)
-    LCDData(__cgram[__i]);
+//  /* Custom Char */
+//  LCDCmd(0b01000000);
+//
+//  uint8_t __i;
+//  for (__i = 0; __i<sizeof (__cgram); __i++)
+//    LCDData(__cgram[__i]);
 
 
 }
