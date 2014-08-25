@@ -62,9 +62,15 @@ void LCDWriteNibble(char data) {
 #ifdef LCD_DEBUG
   printf("LCD Port Value: 0x%x\r\n", LCD_DATA_PORT);
   printf("LCD Latch Value: 0x%x\r\n", LCD_DATA_LATCH);
-  printf("LCD Enable/RS/RW Values: %d/%d/%d\r\n", LCD_E, LCD_RS, LCD_RW);
-  printf("LCD Enable/RS/RW Latches: %d/%d/%d\r\n", LCD_E_LATCHBIT,
-      LCD_RS_LATCHBIT, LCD_RW_LATCHBIT);
+  printf("LCD Enable/RS Values: %d/%d\r\n", LCD_E, LCD_RS);
+#ifdef LCD_RW_PORTNAME
+    printf("LCD RW Value: %d\r\n", LCD_RW);
+#endif
+  printf("LCD Enable/RS Latch Values: %d/%d\r\n",
+      LCD_E_LATCHBIT, LCD_RS_LATCHBIT);
+#ifdef LCD_RW_PORTNAME
+    printf("LCD RW Latch Value: %d\r\n", LCD_RW_LATCHBIT);
+#endif
   if (!LCD_E) {
     printf("ERROR: LCD Enable didn't go high\r\n");
   }
@@ -87,7 +93,9 @@ void LCDByte(uint8_t c, uint8_t isdata) {
     } else {
       CLEAR_RS();
     }
+#ifdef LCD_RW_PORTNAME
     CLEAR_RW();
+#endif
     LCDWriteNibble((c) >> 4);
     LCDWriteNibble((c) & 0x0F);
 }
@@ -100,11 +108,15 @@ void LCDInit(uint8_t style) {
 
   LCD_E_TRIS = 0; //Output
   LCD_RS_TRIS = 0; //Output
+#ifdef LCD_RW_PORTNAME
   LCD_RW_TRIS = 0; //Output
-
+#endif
+  
   LCD_DATA_PORT &= (~(0x0F << LCD_DATA_POS)); //Clear data port
   CLEAR_RS();
+#ifdef LCD_RW_PORTNAME
   CLEAR_RW();
+#endif
   CLEAR_E();
 #ifdef LCD_DEBUG
   printf("TRISA=0x%x\r\n", TRISA);

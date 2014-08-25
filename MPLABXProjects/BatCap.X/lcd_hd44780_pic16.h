@@ -38,8 +38,8 @@ extern "C" {
 
 //Read/Write (RW)
 //RW is connected to Port A bit 5
-#define LCD_RW_PORTNAME     A
-#define LCD_RW_POS      5
+//#define LCD_RW_PORTNAME     A
+//#define LCD_RW_POS      5
 
 //Enable signal (E)
 //E is connected to Port C bit 4
