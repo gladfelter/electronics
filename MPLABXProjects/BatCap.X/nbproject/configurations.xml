@@ -7,6 +7,7 @@
       <itemPath>lcd_hd44780_pic16.h</itemPath>
       <itemPath>serial_pic16.h</itemPath>
       <itemPath>frequency.h</itemPath>
+      <itemPath>cycle_button.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -19,6 +20,7 @@
       <itemPath>lcd_hd44780_pic16.c</itemPath>
       <itemPath>isr.c</itemPath>
       <itemPath>serial_pic16.c</itemPath>
+      <itemPath>cycle_button.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

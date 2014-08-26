@@ -18,7 +18,7 @@
 #pragma config FOSC = INTOSC    // Oscillator Selection (INTOSC oscillator: I/O function on CLKIN pin)
 #pragma config WDTE = OFF       // Watchdog Timer Enable (WDT enabled)
 #pragma config PWRTE = OFF      // Power-up Timer Enable (PWRT disabled)
-#pragma config MCLRE = ON       // MCLR Pin Function Select (MCLR/VPP pin function is MCLR)
+#pragma config MCLRE = OFF      // MCLR Pin Function Select (MCLR/VPP pin function is GPIO)
 #pragma config CP = OFF         // Flash Program Memory Code Protection (Program memory code protection is disabled)
 #pragma config CPD = OFF        // Data Memory Code Protection (Data memory code protection is disabled)
 #pragma config BOREN = ON       // Brown-out Reset Enable (Brown-out Reset enabled)
@@ -42,6 +42,7 @@
 #include "frequency.h"
 #include "serial_pic16.h"
 #include "lcd_hd44780_pic16.h"
+#include "cycle_button.h"
 
 #define IRCF_OSC_16MHZ 0b1111
 #define INPUT 1
@@ -55,6 +56,16 @@ void waitOnOscillatorStable() {
   }
 }
 
+void cycleNotify(unsigned char) {
+}
+
+void wakeupNotify() {
+}
+
+int getMillis() {
+  return 0;
+}
+
 /*
  * Port Assignments:
  *
@@ -62,7 +73,7 @@ void waitOnOscillatorStable() {
  *     C0-C3: 4-bit data bus
  *     C4   : Enable
  *     A4   : Register Select
- *     A5   : Read/Write
+ *     A5   : LCD Control
  *
  *   Serial:
  *     A0   : TX
@@ -70,7 +81,7 @@ void waitOnOscillatorStable() {
  *
  *   Discharge MOSFET Gate: C5
  *
- *   Reset: A3
+ *   Begin Cycle: A3
  *
  *   Voltage Measurement: A2/AN2
  */
@@ -91,6 +102,7 @@ void main() {
   INLVLC = 0;
 
   waitOnOscillatorStable();
+  CycleButtonInit(cycleNotify, wakeupNotify, getMillis);
   __delay_ms(40);
 
   SerialInit(9600, &serialBufferPtr, 64);
@@ -114,15 +126,7 @@ void main() {
   LCDWriteString("Awake!");
   LCDWriteStringXY(0, 1, "Yeah!");
   while (1) {
-//    unsigned char data;
-//    for (data = 0; data < 0x010; data++) {
-//      __delay_ms(10000);
-//      __delay_ms(10000);
-//      PORTC = data;
-//      char binbuff[20];
-//      itoa(binbuff, data, 2);
-//      printf("Data = 0b%s\r\n", binbuff);
-//    }
+
   }
 }
 
