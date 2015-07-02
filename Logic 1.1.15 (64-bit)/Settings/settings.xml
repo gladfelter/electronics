@@ -12,7 +12,7 @@
 		<second>English, United States</second>
 	</mLocale>
 	<mLogicHardwareHasRun>1</mLogicHardwareHasRun>
-	<mRunCount>1</mRunCount>
+	<mRunCount>2</mRunCount>
 	<mLowerSampleRateOnError>1</mLowerSampleRateOnError>
 	<mDontShowScreenshotRegionMessageBox>0</mDontShowScreenshotRegionMessageBox>
 	<mDeviceSettings class_id="2" tracking_level="0" version="0">
@@ -240,40 +240,40 @@
 			</mStates>
 		</px>
 	</mCaptureFinder>
-	<mCaptureDeviceId>11809050163536538749</mCaptureDeviceId>
+	<mCaptureDeviceId>677398403</mCaptureDeviceId>
 	<mCaptureActiveChannels>
 		<count>8</count>
 		<item_version>8</item_version>
 		<item>
-			<mDeviceId>11809050163536538749</mDeviceId>
+			<mDeviceId>677398403</mDeviceId>
 			<mChannelIndex>0</mChannelIndex>
 		</item>
 		<item>
-			<mDeviceId>11809050163536538749</mDeviceId>
+			<mDeviceId>677398403</mDeviceId>
 			<mChannelIndex>1</mChannelIndex>
 		</item>
 		<item>
-			<mDeviceId>11809050163536538749</mDeviceId>
+			<mDeviceId>677398403</mDeviceId>
 			<mChannelIndex>2</mChannelIndex>
 		</item>
 		<item>
-			<mDeviceId>11809050163536538749</mDeviceId>
+			<mDeviceId>677398403</mDeviceId>
 			<mChannelIndex>3</mChannelIndex>
 		</item>
 		<item>
-			<mDeviceId>11809050163536538749</mDeviceId>
+			<mDeviceId>677398403</mDeviceId>
 			<mChannelIndex>4</mChannelIndex>
 		</item>
 		<item>
-			<mDeviceId>11809050163536538749</mDeviceId>
+			<mDeviceId>677398403</mDeviceId>
 			<mChannelIndex>5</mChannelIndex>
 		</item>
 		<item>
-			<mDeviceId>11809050163536538749</mDeviceId>
+			<mDeviceId>677398403</mDeviceId>
 			<mChannelIndex>6</mChannelIndex>
 		</item>
 		<item>
-			<mDeviceId>11809050163536538749</mDeviceId>
+			<mDeviceId>677398403</mDeviceId>
 			<mChannelIndex>7</mChannelIndex>
 		</item>
 	</mCaptureActiveChannels>
@@ -282,7 +282,7 @@
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>
-				<mDeviceId>11809050163536538749</mDeviceId>
+				<mDeviceId>677398403</mDeviceId>
 				<mChannelIndex>0</mChannelIndex>
 			</first>
 			<second class_id="17" tracking_level="0" version="8">
@@ -298,7 +298,7 @@
 		</item>
 		<item>
 			<first>
-				<mDeviceId>11809050163536538749</mDeviceId>
+				<mDeviceId>677398403</mDeviceId>
 				<mChannelIndex>1</mChannelIndex>
 			</first>
 			<second>
@@ -314,7 +314,7 @@
 		</item>
 		<item>
 			<first>
-				<mDeviceId>11809050163536538749</mDeviceId>
+				<mDeviceId>677398403</mDeviceId>
 				<mChannelIndex>2</mChannelIndex>
 			</first>
 			<second>
@@ -330,7 +330,7 @@
 		</item>
 		<item>
 			<first>
-				<mDeviceId>11809050163536538749</mDeviceId>
+				<mDeviceId>677398403</mDeviceId>
 				<mChannelIndex>3</mChannelIndex>
 			</first>
 			<second>
@@ -346,7 +346,7 @@
 		</item>
 		<item>
 			<first>
-				<mDeviceId>11809050163536538749</mDeviceId>
+				<mDeviceId>677398403</mDeviceId>
 				<mChannelIndex>4</mChannelIndex>
 			</first>
 			<second>
@@ -362,7 +362,7 @@
 		</item>
 		<item>
 			<first>
-				<mDeviceId>11809050163536538749</mDeviceId>
+				<mDeviceId>677398403</mDeviceId>
 				<mChannelIndex>5</mChannelIndex>
 			</first>
 			<second>
@@ -378,7 +378,7 @@
 		</item>
 		<item>
 			<first>
-				<mDeviceId>11809050163536538749</mDeviceId>
+				<mDeviceId>677398403</mDeviceId>
 				<mChannelIndex>6</mChannelIndex>
 			</first>
 			<second>
@@ -394,7 +394,7 @@
 		</item>
 		<item>
 			<first>
-				<mDeviceId>11809050163536538749</mDeviceId>
+				<mDeviceId>677398403</mDeviceId>
 				<mChannelIndex>7</mChannelIndex>
 			</first>
 			<second>
@@ -425,8 +425,8 @@
 	<mCaptureMinimizeChannelLabels>0</mCaptureMinimizeChannelLabels>
 	<mCaptureHideFinders>0</mCaptureHideFinders>
 	<mDisplayBase>2</mDisplayBase>
-	<mCaptureSampleRateHz>4000000</mCaptureSampleRateHz>
-	<mCaptureNumSamples>5000000</mCaptureNumSamples>
+	<mCaptureSampleRateHz>25000</mCaptureSampleRateHz>
+	<mCaptureNumSamples>1000000</mCaptureNumSamples>
 	<mCapturePreTriggerBufferSize>10000000</mCapturePreTriggerBufferSize>
 	<mDataExportSettings class_id="19" tracking_level="0" version="8">
 		<mExportAllChannels>1</mExportAllChannels>
@@ -453,23 +453,19 @@
 	</mDataExportSettings>
 	<mLogic16Use5Volts>0</mLogic16Use5Volts>
 	<mAnalyzerSaveNames>
-		<count>1</count>
+		<count>0</count>
 		<item_version>0</item_version>
-		<item>Simple Parallel</item>
 	</mAnalyzerSaveNames>
 	<mAnalyzerSaveData>
-		<count>1</count>
+		<count>0</count>
 		<item_version>0</item_version>
-		<item>22 serialization::archive 5 0 8 11809050163536538749 3 11809050163536538749 4 11809050163536538749 5 11809050163536538749 6 18446744073709551615 4294967295 18446744073709551615 4294967295 18446744073709551615 4294967295 18446744073709551615 4294967295 11809050163536538749 2 0</item>
 	</mAnalyzerSaveData>
 	<mAnalyzerSaveUseSystemDisplayBase>
-		<count>1</count>
-		<item>1</item>
+		<count>0</count>
 	</mAnalyzerSaveUseSystemDisplayBase>
 	<mAnalyzerSaveDisplayBase class_id="21" tracking_level="0" version="0">
-		<count>1</count>
+		<count>0</count>
 		<item_version>0</item_version>
-		<item>2</item>
 	</mAnalyzerSaveDisplayBase>
 	<mLogic16ChannelSelection>
 		<count>16</count>
@@ -492,8 +488,8 @@
 		<item>15</item>
 	</mLogic16ChannelSelection>
 	<mLogic16SpecificChannels>3500580099</mLogic16SpecificChannels>
-	<mLogic16SpecificAnalyzer>3377642865</mLogic16SpecificAnalyzer>
-	<mLogic16SpecificFinder>4031704193</mLogic16SpecificFinder>
+	<mLogic16SpecificAnalyzer>55172735</mLogic16SpecificAnalyzer>
+	<mLogic16SpecificFinder>4031704216</mLogic16SpecificFinder>
 	<mInstallationId>{755bdb44-0f61-4c37-80f9-4139efa55fae}</mInstallationId>
 	<mLogic16LedBehavior>3</mLogic16LedBehavior>
 	<mEnableSingleClickToZoom>1</mEnableSingleClickToZoom>
