@@ -19,18 +19,17 @@
  
  */
 #include "Statistic.h"
+#include <EEPROM.h>
+
+Statistic stats;
+boolean isReading = false;
 
 // These constants won't change.  They're used to give names
 // to the pins used:
 const int analogInPin = A0;  // Analog input pin that the potentiometer is attached to
 const int analogOutPin = 9; // Analog output pin that the LED is attached to
-boolean looped = false;
-int readings[100];
-int nextReading = -1;
-int sensorValue = 0;        // value read from the pot
-int outputValue = 0;        // value output to the PWM (analog out)
-int minval, maxval, sum, x;
 
+int nextEepromIdx = 0;
 
 void setup() {
   analogReference(EXTERNAL);
@@ -42,36 +41,32 @@ void setup() {
 void loop() {
   // read the analog in value:
   if (!digitalRead(2)) {
-    if (nextReading == -1) {
-      nextReading = 0;
-      looped = false;
-    } else {
-      sensorValue = analogRead(analogInPin);            
-      readings[nextReading] = sensorValue;
-      if (nextReading == sizeof(readings) / sizeof(int) - 1) {
-        looped = true;
-      }
-      nextReading = (nextReading + 1) % (sizeof(readings) / sizeof(int));
-      // print the results to the serial monitor:
-      //Serial.print("sensor = " );                       
-      //Serial.println(sensorValue);      
+    if (!isReading) {
+      isReading = true;
+    } else if (stats.count() < 100){
+      stats.add(analogRead(analogInPin));
     }
   } else {
-    if (nextReading != -1) {
-      minval = maxval = readings[0];
-      sum = 0;
-      for (x = 0; looped ? x < sizeof(readings) / sizeof(int) : nextReading; x++) {
-        sum += readings[x];
-        minval = minval > readings[x] ? readings[x] : minval;
-        maxval = maxval < readings[x] ? readings[x] : maxval;
-      }
+    if (isReading) {
       Serial.print("min = ");
-      Serial.print(minval);
+      Serial.print(stats.minimum());
       Serial.print("; max = ");
-      Serial.print(maxval);
+      Serial.print(stats.maximum());
       Serial.print("; avg = ");
-      Serial.println(sum / (looped ? sizeof(readings) / sizeof(int) : nextReading));
-      nextReading = -1;
+      Serial.print(stats.average());
+      Serial.print("; intavg = ");
+      Serial.print(int(stats.average()));
+      Serial.print("; low = ");
+      Serial.print(0x00ff & int(stats.average()));
+      Serial.print("; high = ");
+      Serial.print(0x00ff & (int(stats.average()) >> 8));
+      Serial.print("; stddev = ");
+      Serial.println(stats.pop_stdev());
+      EEPROM.write(nextEepromIdx++, 0x00ff & int(stats.average()));
+      EEPROM.write(nextEepromIdx++, 0x00ff & (int(stats.average()) >> 8));
+      stats.clear();
+      isReading = false;
+      delay(500);
     }
   }
   delay(2);                     
