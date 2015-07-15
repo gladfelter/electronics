@@ -1,14 +1,16 @@
 #ifndef button_array_h
 #define button_array_h
+
 #include <Arduino.h>
 #include <EEPROM.h>
+
 class ButtonArray {
 public:
   /**
    * Initializes the calibration values from Eeprom memory
    */
-  void init(int analogIn);
-  
+  void init(int analogInPin);
+
   /**
    * Reads the next button.
    *
@@ -16,15 +18,16 @@ public:
    */
   int readButton();
 private:
-  int analogIn;
-  int window;
-  int idx;
-  int val;
-  int low[16];
-  int high[16];
-  int lastVal = -1;
-  int newVal;
-  int misses;
-  int repeats = 0;
+  int _lastVal;
+  int _newVal;
+  int _misses;
+  int _repeats;
+  int _analogInPin;
+  int _window;
+  int _idx;
+  int _val;
+  int _low[16];
+  int _high[16];
 };
 #endif
+

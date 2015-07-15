@@ -13,6 +13,7 @@
 #include <EEPROM.h>
 #include "button_array.h"
 TMRpcm tmrpcm;   // create an object for use in this sketch
+ButtonArray buttons;
 char c;
 int x;
 
@@ -67,9 +68,10 @@ void writeMenu() {
 
 void setup(){
 
+  Serial.begin(9600);
+  buttons.init(A0);
   tmrpcm.speakerPin = 9; //11 on Mega, 9 on Uno, Nano, etc
 
-  Serial.begin(9600);
   if (!SD.begin(SD_ChipSelectPin)) {  // see if the card is present and can be initialized:
     Serial.println("SD fail");  
     return;   // don't do anything more if not
@@ -77,13 +79,19 @@ void setup(){
   writeMenu();
 }
 
+int nextButton;
+
 void loop(){  
   if (!tmrpcm.isPlaying()) {
     tmrpcm.disable();
   }
-
-
-  if(Serial.available()){   
+  nextButton = buttons.readButton();
+  if (nextButton >= 0) {
+    Serial.print("Button ");
+    Serial.print(nextButton);
+    Serial.println(" pressed");
+    tmrpcm.play(filenames[nextButton]);
+  } else if(Serial.available()){   
     c = Serial.read();
     Serial.write(c);
     Serial.write('\n');
