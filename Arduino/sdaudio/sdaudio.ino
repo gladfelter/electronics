@@ -2,7 +2,7 @@
  * Example of transcoding a wav:
  * mplayer -ao pcm:waveheader:file=/tmp/output.wav \
  *     -vo null -vc null \
- *     --af=format=u8,channels=1,resample=11200:0:2 \
+ *     --af=format=u8,channels=1,resample=11200:0:0 \
  *     /media/david/3947-50C2/concentrate.wav 
  */
 
@@ -10,7 +10,8 @@
 //#define SD_ChipSelectPin 53  //example uses hardware SS pin 53 on Mega2560
 #define SD_ChipSelectPin 4  //using digital pin 4 on arduino nano 328
 #include <TMRpcm.h>           //  also need to include this library...
-
+#include <EEPROM.h>
+#include "button_array.h"
 TMRpcm tmrpcm;   // create an object for use in this sketch
 char c;
 int x;
