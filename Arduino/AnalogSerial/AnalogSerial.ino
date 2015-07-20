@@ -48,7 +48,9 @@ void loop() {
     }
   } else {
     if (isReading) {
-      Serial.print("min = ");
+      Serial.print("At EEPROM Index ");
+      Serial.print(nextEepromIdx);
+      Serial.print("; min = ");
       Serial.print(stats.minimum());
       Serial.print("; max = ");
       Serial.print(stats.maximum());
