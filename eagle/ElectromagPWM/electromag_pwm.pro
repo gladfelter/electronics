@@ -2,24 +2,24 @@ EAGLE AutoRouter Statistics:
 
 Job           : /home/david/electronics/eagle/ElectromagPWM/electromag_pwm.brd
 
-Start at      : 22:23:00 (8/21/15)
-End at        : 22:23:02 (8/21/15)
+Start at      : 18:08:24 (6/9/16)
+End at        : 18:08:29 (6/9/16)
 Elapsed time  : 
 
-Signals       :    10   RoutingGrid: 9 mil  Layers: 1
-Connections   :    25   predefined:  0 ( 0 Vias )
+Signals       :    10   RoutingGrid: 20 mil  Layers: 1
+Connections   :    26   predefined:  25 ( 0 Vias )
 
-Router memory :   318620
+Router memory :   67650
 
-Passname          : TopRouter     Route Optimize1 Optimize2 Optimize3 Optimize4
+Passname          : TopRouter     Route Optimize1 Optimize2 Optimize3 Optimize4 Optimize5 Optimize6 Optimize7 Optimize8
 
-Time per pass     :            
-Number of Ripups  :         0         1         0         0         0         0
-max. Level        :         0         1         0         0         0         0
-max. Total        :         0         4         0         0         0         0
+Time per pass     :                    
+Number of Ripups  :         0         0         0         0         0         0         0         0         0         0
+max. Level        :         0         0         0         0         0         0         0         0         0         0
+max. Total        :         0         0         0         0         0         0         0         0         0         0
 
-Routed            :        20        25        25        25        25        25
-Vias              :         0         0         0         0         0         0
-Resolution        :    80.0 %   100.0 %   100.0 %   100.0 %   100.0 %   100.0 %
+Routed            :         0         0         0         0         0         0         0         0         0         0
+Vias              :         0         0         0         0         0         0         0         0         0         0
+Resolution        :    96.2 %    96.2 %    96.2 %    96.2 %    96.2 %    96.2 %    96.2 %    96.2 %    96.2 %    96.2 %
 
 Final             : 100.0% finished
